@@ -7,7 +7,7 @@ const register = (data) => axios.post(`${SERVER_URL}/auth/register`, data);
 
 const getMaingroups = () => axios.get(`${SERVER_URL}/maingroup/getMaingroups`);
 const getSubgroups = () => axios.get(`${SERVER_URL}/subgroup/getSubgroups`);
-const getProducts = (main, sub) => axios.get(`${SERVER_URL}/products/getList?main=${main}&sub=${sub}`);
+const getProducts = (search, main, sub) => axios.get(`${SERVER_URL}/products/getList?search=${search}&main=${main}&sub=${sub}`);
 
 export const ApiService = {
     login,

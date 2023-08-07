@@ -50,6 +50,7 @@ function HomePage() {
   const [note, setNote] = useState("");
   const [selectedMaingroup, setSelectedMaingroup] = useState("");
   const [selectedSubgroup, setSelectedSubgroup] = useState("");
+  const [search, setSearch] = useState("");
 
   const handleMaingroupChange = (value) => {
     setSelectedSubgroup("");
@@ -57,7 +58,7 @@ function HomePage() {
     setSelectedMaingroup(value);
     const selectedSubgroups = subgroupList.filter(item => item.mainGroup === value);
     setSubgroups(selectedSubgroups);
-    getProducts(value, "");
+    getProducts(search, value, "");
   }
 
   const handleSubgroupChange = (value) => {
@@ -66,13 +67,13 @@ function HomePage() {
     if (subgroup) {
       setNote(subgroup.notes);
     }
-    getProducts(selectedMaingroup, value);
+    getProducts(search, selectedMaingroup, value);
   }
 
   useEffect(() => {
     getSubgroups();
     getMaingroup();
-    getProducts("", "");
+    getProducts(search, selectedMaingroup, selectedSubgroup);
   }, [])
 
   const getMaingroup = () => {
@@ -96,8 +97,8 @@ function HomePage() {
     })
   }
 
-  const getProducts = (main, sub) => {
-    ApiService.getProducts(main, sub).then(res => {
+  const getProducts = (search, main, sub) => {
+    ApiService.getProducts(search, main, sub).then(res => {
       if (res.status === 200) {
         if (res.data.data) {
           const products = res.data.data.map((item, index) => {
@@ -117,6 +118,11 @@ function HomePage() {
     })
   }
 
+  const handleSearch = (e) => {
+    setSearch(e.target.value);
+    getProducts(e.target.value, selectedMaingroup, selectedSubgroup);
+  }
+
   return (
     <div className="App">
       <div className='content'>
@@ -126,7 +132,11 @@ function HomePage() {
             <div className='data-panel gap-4'>
               <div className='left-panel'>
                 <Card>
-                  <Row gutter={[16, 16]}>
+                  <div>
+                    <label>Search</label>
+                    <Input placeholder="Search..." value={search} onChange={(e) => handleSearch(e)} />
+                  </div>
+                  <Row className='mt-4' gutter={[16, 16]}>
                     <Col span={12}>
                       <label>Main Group</label>
                       <List
