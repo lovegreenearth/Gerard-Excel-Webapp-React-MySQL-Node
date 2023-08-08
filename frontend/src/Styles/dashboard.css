@@ -1,0 +1,83 @@
+/* Googel Fonts  */
+/* @import url("https://fonts.googleapis.com/css?family=Open+Sans:400,600,700"); */
+
+.flat-color-1 {
+  color: #000000;
+}
+
+.flat-color-2 {
+  color: #000000;
+}
+
+.flat-color-3 {
+  color: #000000;
+}
+
+.flat-color-4 {
+  color: #000000;
+}
+
+.br-0 {
+  border: none !important;
+}
+
+.black-rgba {
+  background-color: rgba(74, 99, 17, 0.15) !important;
+}
+
+body {
+  display: table;
+  font-family: "Open Sans", sans-serif;
+  font-size: 16px;
+  background: #9bbde7;
+  width: 100%;
+}
+
+p {
+  font-size: 16px;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 400;
+  line-height: 24px;
+  color: #878787;
+}
+
+.App {
+  height: 100vh;
+  overflow: auto;
+}
+
+.content {
+  margin: 20px;
+}
+
+.main-card {
+  min-height: 94vh;
+}
+
+.mt-4 {
+  margin-top: 16px;
+}
+
+.list {
+  height: 42vh;
+  overflow-y: auto;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/*---Media Query---*/
+
+@media (max-width: 992px) {
+  .list {
+    height: 20vh;
+  }
+}
+
+@media (max-width: 500px) {
+  .product-table {
+    max-width: calc(100vw - 135px);
+    overflow-x: auto;
+  }
+}
