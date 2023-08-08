@@ -129,67 +129,69 @@ function HomePage() {
         <Card className='main-card'>
           <Header />
           <main className='mt-4'>
-            <div className='data-panel gap-4'>
-              <div className='left-panel'>
+            <Row gutter={[16, 16]}>
+              <Col xs={24} sm={24} md={10} lg={8}>
+                <div>
+                  <Card>
+                    <div>
+                      <label>Search</label>
+                      <Input placeholder="Search..." value={search} onChange={(e) => handleSearch(e)} />
+                    </div>
+                    <Row className='mt-4' type="flex" gutter={[16, 16]}>
+                      <Col xs={24} sm={24} md={24} lg={12}>
+                        <label>Main Group</label>
+                        <List
+                          bordered
+                          dataSource={maingroups}
+                          size='small'
+                          className='list'
+                          renderItem={(item) => (
+                            <List.Item onClick={() => handleMaingroupChange(item.id)}
+                              className='cursor-pointer'>
+                              {item.name}
+                            </List.Item>
+                          )}
+                        />
+                      </Col>
+                      <Col xs={24} sm={24} md={24} lg={12}>
+                        <label>Sub Group</label>
+                        <List
+                          bordered
+                          dataSource={subgroups}
+                          size='small'
+                          className='list'
+                          renderItem={(item) => (
+                            <List.Item onClick={() => handleSubgroupChange(item.id)}
+                              className='cursor-pointer'>
+                              {item.name}
+                            </List.Item>
+                          )}
+                        />
+                      </Col>
+                    </Row>
+                    <div className='mt-4'></div>
+                    <Row>
+                      <Col span={24}>
+                        <TextArea
+                          value={note}
+                          onChange={(e) => setNote(e.target.value)}
+                          placeholder="Note"
+                          autoSize={{
+                            minRows: 5,
+                            maxRows: 8,
+                          }}
+                        />
+                      </Col>
+                    </Row>
+                  </Card>
+                </div>
+              </Col>
+              <Col xs={24} sm={24} md={14} lg={16}>
                 <Card>
-                  <div>
-                    <label>Search</label>
-                    <Input placeholder="Search..." value={search} onChange={(e) => handleSearch(e)} />
-                  </div>
-                  <Row className='mt-4' gutter={[16, 16]}>
-                    <Col span={12}>
-                      <label>Main Group</label>
-                      <List
-                        bordered
-                        dataSource={maingroups}
-                        size='small'
-                        className='list'
-                        renderItem={(item) => (
-                          <List.Item onClick={() => handleMaingroupChange(item.id)}
-                            className='cursor-pointer'>
-                            {item.name}
-                          </List.Item>
-                        )}
-                      />
-                    </Col>
-                    <Col span={12}>
-                      <label>Sub Group</label>
-                      <List
-                        bordered
-                        dataSource={subgroups}
-                        size='small'
-                        className='list'
-                        renderItem={(item) => (
-                          <List.Item onClick={() => handleSubgroupChange(item.id)}
-                            className='cursor-pointer'>
-                            {item.name}
-                          </List.Item>
-                        )}
-                      />
-                    </Col>
-                  </Row>
-                  <div className='mt-4'></div>
-                  <Row>
-                    <Col span={24}>
-                      <TextArea
-                        value={note}
-                        onChange={(e) => setNote(e.target.value)}
-                        placeholder="Note"
-                        autoSize={{
-                          minRows: 5,
-                          maxRows: 8,
-                        }}
-                      />
-                    </Col>
-                  </Row>
+                  <Table columns={columns} dataSource={products}  className='product-table' />
                 </Card>
-              </div>
-              <div className='right-panel'>
-                <Card>
-                  <Table columns={columns} dataSource={products} />
-                </Card>
-              </div>
-            </div>
+              </Col>
+            </Row>
           </main>
         </Card>
       </div>
