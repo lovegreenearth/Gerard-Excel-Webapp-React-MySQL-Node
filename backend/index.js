@@ -42,7 +42,7 @@ app.use(
 app.use(express.json());
 /* This is a middleware that is used to parse the body of the request. */
 const corsOptions = {
-  origin: [process.env.ORIGIN_FRONTEND_SERVER], //frontend server localhost:8080
+  origin: '*', //frontend server localhost:8080
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true, // enable set cookie
   optionsSuccessStatus: 200,
