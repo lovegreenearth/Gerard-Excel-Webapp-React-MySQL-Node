@@ -43,9 +43,18 @@ const Login = ({ logado = false }) => {
         });
       } else {
         toast(res.data.msg, { position: 'bottom-right' });
+        setTimeout(() => {
+          notify = toast.dismiss();
+        }, 3000);
       }
     }).catch(err => {
-      notify = null;
+      toast("Server Internal Error", {
+        position: 'bottom-right',
+        id: notify,
+      });
+      setTimeout(() => {
+        notify = toast.dismiss();
+      }, 3000);
       console.log(err);
     });
   }
