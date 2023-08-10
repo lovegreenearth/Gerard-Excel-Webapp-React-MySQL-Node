@@ -25,4 +25,4 @@ db.getConnection((err, connection) => {
       connection.release();
 });
 
-module.exports = mysqlConnection;
+module.exports = db;
