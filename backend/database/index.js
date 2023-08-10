@@ -1,43 +1,31 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 require('dotenv').config();
 
 /* This is creating a connection to the database. */
 
-// var config_db = {
-//       // Host name for database connection:
-//       host: 'db-mysql-nyc1-71256-do-user-14497985-0.b.db.ondigitalocean.com',
-//       // Port number for database connection:
-//       port: 25060,
-//       // Database user:
-//       user: 'doadmin',
-//       // Password for the above database user:
-//       password: 'AVNS_9O3tKO6NcswIT5v-eMK',
-//       // Database name:
-//       database: 'defaultdb'
-// };
-
-// var db = mysql.createPool(config_db); // or mysql.createConnection(config_db);
-
-// /* This is creating a connection to the database. */
-// db.getConnection((err, connection) => {
-//       if (err) throw err;
-//       console.log('🗃  DB connected successful: ' + connection.threadId);
-//       connection.release();
-// });
-
-// module.exports = db;
-
-var con = mysql.createConnection({
-      host: "db-mysql-nyc1-71256-do-user-14497985-0.b.db.ondigitalocean.com",
-      user: "doadmin",
-      password: "AVNS_9O3tKO6NcswIT5v-eMK",
+var config_db = {
+      // Host name for database connection:
+      host: 'db-mysql-nyc1-71256-do-user-14497985-0.b.db.ondigitalocean.com',
+      // Port number for database connection:
       port: 25060,
-      database: 'defaultdb'
-});
+      // Database user:
+      user: 'doadmin',
+      // Password for the above database user:
+      password: 'AVNS_9O3tKO6NcswIT5v-eMK',
+      // Database name:
+      database: 'defaultdb',
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0
+};
 
-con.connect(function (err) {
+var db = mysql.createPool(config_db); // or mysql.createConnection(config_db);
+
+/* This is creating a connection to the database. */
+db.getConnection((err, connection) => {
       if (err) throw err;
-      console.log("Connected!");
+      console.log('🗃  DB connected successful: ' + connection.threadId);
+      connection.release();
 });
 
-module.exports = con;
+module.exports = db;
