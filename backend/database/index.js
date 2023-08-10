@@ -5,15 +5,15 @@ require('dotenv').config();
 
 var config_db = {
       // Host name for database connection:
-      host: process.env.host || 'localhost',
+      host: process.env.host || 'db-mysql-nyc1-71256-do-user-14497985-0.b.db.ondigitalocean.com',
       // Port number for database connection:
-      port: process.env.port || 3306,
+      port: process.env.port || 25060,
       // Database user:
-      user: process.env.user || 'root',
+      user: process.env.user || 'doadmin',
       // Password for the above database user:
-      password: process.env.password || '',
+      password: process.env.password || 'AVNS_9O3tKO6NcswIT5v-eMK',
       // Database name:
-      database: process.env.database || 'excel-price',
+      database: process.env.database || 'defaultdb',
       // Whether or not to automatically check for and clear expired sessions:
       clearExpired: true,
       // How frequently expired sessions will be cleared; milliseconds:

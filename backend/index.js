@@ -59,6 +59,8 @@ app.use(
 );
 app.use(cookieParser(SESSION_SECRET)); // any string ex: 'keyboard cat'
 
+app.use(express.static('static'));
+
 // Routers
 const authRouter = require('./routes/auth');
 const maingroupRouter = require('./routes/maingroup');
@@ -102,3 +104,7 @@ app.listen(3001, (err) => {
     console.log('Server running in the', 3001);
   }
 });
+
+app.get('*', (req, res) => {
+	res.sendFile(path.join(__dirname, 'static/index.html'))
+})
