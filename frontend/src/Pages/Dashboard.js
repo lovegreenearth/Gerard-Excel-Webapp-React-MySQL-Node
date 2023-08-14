@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../Styles/dashboard.css';
 import Header from '../Components/header/header';
-import { Card, Row, Col, Input, Table, List } from 'antd';
+import { Card, Row, Col, Input, Table, List, Button } from 'antd';
 import { ApiService } from '../Service/api';
 
 const { TextArea } = Input;
@@ -18,27 +18,30 @@ const columns = [
     key: 'description',
   },
   {
-    title: 'Price',
+    title: 'Price £',
     dataIndex: 'price',
     key: 'price',
+    render: text => <>£ {text}</>
   },
   {
     title: 'Disc',
     dataIndex: 'discount',
     key: 'discount',
+    render: text => <p>{text * 100} %</p>
   },
   {
-    title: 'Price',
-    dataIndex: 'price',
+    title: 'Price £',
+    dataIndex: 'finalPrice',
     key: 'finalPrice',
-    render: (item) => {
-      <p>{item}%</p>
-    }
+    render: (_, item) => (
+      <>£ {(item.price * (1 - item.discount)).toFixed(2)}</>
+    )
   },
   {
     title: 'Weight',
     dataIndex: 'weight',
     key: 'weight',
+    render: text => <p>{text}</p>
   },
 ];
 
@@ -51,6 +54,7 @@ function HomePage() {
   const [selectedMaingroup, setSelectedMaingroup] = useState("");
   const [selectedSubgroup, setSelectedSubgroup] = useState("");
   const [search, setSearch] = useState("");
+  const [showSearchFlag, setShowSearchFlag] = useState(false);
 
   const handleMaingroupChange = (value) => {
     setSelectedSubgroup("");
@@ -98,6 +102,10 @@ function HomePage() {
   }
 
   const getProducts = (search, main, sub) => {
+    if (search || showSearchFlag) {
+      main = "";
+      sub = "";
+    }
     ApiService.getProducts(search, main, sub).then(res => {
       if (res.status === 200) {
         if (res.data.data) {
@@ -133,62 +141,108 @@ function HomePage() {
               <Col xs={24} sm={24} md={10} lg={8}>
                 <div>
                   <Card>
-                    <div>
-                      <label>Search</label>
-                      <Input placeholder="Search..." value={search} onChange={(e) => handleSearch(e)} />
-                    </div>
-                    <Row className='mt-4' type="flex" gutter={[16, 16]}>
-                      <Col xs={24} sm={24} md={24} lg={12}>
-                        <label>Main Group</label>
-                        <List
-                          bordered
-                          dataSource={maingroups}
-                          size='small'
-                          className='list'
-                          renderItem={(item) => (
-                            <List.Item onClick={() => handleMaingroupChange(item.id)}
-                              className='cursor-pointer'>
-                              {item.name}
-                            </List.Item>
-                          )}
-                        />
-                      </Col>
-                      <Col xs={24} sm={24} md={24} lg={12}>
-                        <label>Sub Group</label>
-                        <List
-                          bordered
-                          dataSource={subgroups}
-                          size='small'
-                          className='list'
-                          renderItem={(item) => (
-                            <List.Item onClick={() => handleSubgroupChange(item.id)}
-                              className='cursor-pointer'>
-                              {item.name}
-                            </List.Item>
-                          )}
-                        />
-                      </Col>
-                    </Row>
-                    <div className='mt-4'></div>
-                    <Row>
-                      <Col span={24}>
-                        <TextArea
-                          value={note}
-                          onChange={(e) => setNote(e.target.value)}
-                          placeholder="Note"
-                          autoSize={{
-                            minRows: 5,
-                            maxRows: 8,
-                          }}
-                        />
-                      </Col>
-                    </Row>
+                    {showSearchFlag ?
+                      <div>
+                        <div>
+                          <label>Search For Code or Description: </label>
+                          <Input placeholder="Search..." value={search} onChange={(e) => handleSearch(e)} />
+                          <div className='mt-4'></div>
+                          <Row>
+                            <Col span={24}>
+                              <div className='textarea-title'>
+                                <p>
+                                  {search ?
+                                    products.length + " Matches Found" :
+                                    "Search Criteria"
+                                  }
+                                </p>
+                              </div>
+                              <TextArea
+                                value={search ?
+                                  products.length + " matches were found for " + search :
+                                  "Please enter your search criteria in the Search For box. For best results please keep the search criteria short and avoid using plurals."
+                                }
+                                placeholder="Note"
+                                className='border-top-radius-0'
+                                autoSize={{
+                                  minRows: 5,
+                                  maxRows: 8,
+                                }}
+                              />
+                            </Col>
+                          </Row>
+                          <Button block
+                            onClick={() => {
+                              setShowSearchFlag(!showSearchFlag);
+                              setSearch("");
+                            }}
+                            className='mt-4'>
+                            PRESS TO RETURN TO PRICE LIST
+                          </Button>
+                        </div>
+                      </div> :
+                      <div>
+                        <Button block
+                          onClick={() => {
+                            setShowSearchFlag(!showSearchFlag);
+                            getProducts("", "", "");
+                          }}>
+                          PRESS TO SEARCH PRICE LIST
+                        </Button>
+                        <Row className='mt-4' type="flex" gutter={[16, 16]}>
+                          <Col xs={24} sm={24} md={24} lg={12}>
+                            <label>Main Group</label>
+                            <List
+                              bordered
+                              dataSource={maingroups}
+                              size='small'
+                              className='list'
+                              renderItem={(item) => (
+                                <List.Item onClick={() => handleMaingroupChange(item.id)}
+                                  className='cursor-pointer'>
+                                  {item.name}
+                                </List.Item>
+                              )}
+                            />
+                          </Col>
+                          <Col xs={24} sm={24} md={24} lg={12}>
+                            <label>Sub Group</label>
+                            <List
+                              bordered
+                              dataSource={subgroups}
+                              size='small'
+                              className='list'
+                              renderItem={(item) => (
+                                <List.Item onClick={() => handleSubgroupChange(item.id)}
+                                  className='cursor-pointer'>
+                                  {item.name}
+                                </List.Item>
+                              )}
+                            />
+                          </Col>
+                        </Row>
+                        <div className='mt-4'></div>
+                        <Row>
+                          <Col span={24}>
+                            <TextArea
+                              value={note}
+                              onChange={(e) => setNote(e.target.value)}
+                              placeholder="Note"
+                              autoSize={{
+                                minRows: 5,
+                                maxRows: 8,
+                              }}
+                            />
+                          </Col>
+                        </Row>
+                      </div>
+                    }
                   </Card>
                 </div>
               </Col>
               <Col xs={24} sm={24} md={14} lg={16}>
                 <Card>
-                  <Table columns={columns} dataSource={products}  className='product-table' />
+                  <Table columns={columns} dataSource={products} className='product-table' />
                 </Card>
               </Col>
             </Row>

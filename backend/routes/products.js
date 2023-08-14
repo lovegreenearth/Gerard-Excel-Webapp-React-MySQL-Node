@@ -9,7 +9,7 @@ router.get('/getList', (req, res) => {
     whereQuery += " WHERE";
   }
   if (req.query.search) {
-    whereQuery += " `code` LIKE '%" + req.query.search + "%' ";
+    whereQuery += " `code` LIKE '%" + req.query.search + "%' OR `description` LIKE '%" + req.query.search + "%'";
   }
   if (req.query.main) {
     if (req.query.search) {
