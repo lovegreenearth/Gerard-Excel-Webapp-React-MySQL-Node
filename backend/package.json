@@ -32,6 +32,7 @@
         "fs": "^0.0.1-security",
         "helmet": "^6.0.0",
         "mysql": "github:felixge/node-mysql",
+        "mysql2": "^3.6.0",
         "nanoid": "^4.0.0",
         "nodemon": "^2.0.16"
     },
