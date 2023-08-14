@@ -1,55 +1,71 @@
 import React, { useEffect, useState } from 'react';
 import '../Styles/dashboard.css';
 import Header from '../Components/header/header';
-import { Card, Row, Col, Input, Table, List, Button } from 'antd';
+import { Card, Row, Col, Input, Table, List, Button, Popconfirm } from 'antd';
 import { ApiService } from '../Service/api';
+import toast, { Toaster } from 'react-hot-toast';
 
 const { TextArea } = Input;
-
-const columns = [
-  {
-    title: 'Code',
-    dataIndex: 'code',
-    key: 'code',
-  },
-  {
-    title: 'Description',
-    dataIndex: 'description',
-    key: 'description',
-  },
-  {
-    title: 'Price £',
-    dataIndex: 'price',
-    key: 'price',
-    render: text => <>£ {text}</>
-  },
-  {
-    title: 'Disc',
-    dataIndex: 'discount',
-    key: 'discount',
-    render: text => <p>{text * 100} %</p>
-  },
-  {
-    title: 'Price £',
-    dataIndex: 'finalPrice',
-    key: 'finalPrice',
-    render: (_, item) => (
-      <>£ {(item.price * (1 - item.discount)).toFixed(2)}</>
-    )
-  },
-  {
-    title: 'Weight',
-    dataIndex: 'weight',
-    key: 'weight',
-    render: text => <p>{text}</p>
-  },
-];
+let notify = null;
 
 function HomePage() {
+  const columns = [
+    {
+      title: 'Code',
+      dataIndex: 'code',
+      key: 'code',
+    },
+    {
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
+    },
+    {
+      title: 'Price £',
+      dataIndex: 'price',
+      key: 'price',
+      render: text => <>£ {text}</>
+    },
+    {
+      title: 'Disc',
+      dataIndex: 'discount',
+      key: 'discount',
+      render: text => <p>{text * 100} %</p>
+    },
+    {
+      title: 'Price £',
+      dataIndex: 'finalPrice',
+      key: 'finalPrice',
+      render: (_, item) => (
+        <>£ {(item.price * (1 - item.discount)).toFixed(2)}</>
+      )
+    },
+    {
+      title: 'Weight',
+      dataIndex: 'weight',
+      key: 'weight',
+      render: text => <p>{text}</p>
+    },
+    {
+      title: 'Action',
+      dataIndex: 'id',
+      key: 'id',
+      render: (_, item) => (
+        <>
+          <a href={`/product/edit/${item.id}`}>Edit</a>
+          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(item.id)} className='ml-2'>
+            <a>Delete</a>
+          </Popconfirm>
+        </>
+      )
+    },
+  ];
+
   const [maingroups, setMaingroups] = useState([]);
   const [subgroupList, setSubgroupList] = useState([]);
   const [subgroups, setSubgroups] = useState([]);
   const [products, setProducts] = useState([]);
+  const [results, setResults] = useState([]);
   const [note, setNote] = useState("");
   const [selectedMaingroup, setSelectedMaingroup] = useState("");
   const [selectedSubgroup, setSelectedSubgroup] = useState("");
@@ -102,17 +118,16 @@ function HomePage() {
   }
 
   const getProducts = (search, main, sub) => {
-    if (search || showSearchFlag) {
-      main = "";
-      sub = "";
-    }
     ApiService.getProducts(search, main, sub).then(res => {
       if (res.status === 200) {
         if (res.data.data) {
-          const products = res.data.data.map((item, index) => {
+          const data = res.data.data.map((item, index) => {
             return {
               key: index,
+              id: item.id,
               code: item.code,
+              group: item.group,
+              subgroup: item.subGroup,
               description: item.description,
               price: item.price,
               discount: item.maxDiscount,
@@ -120,22 +135,61 @@ function HomePage() {
               weight: item.weight
             };
           });
-          setProducts(products);
+          var result = [];
+          var tempList = groupBy(data, "group");
+          for (var temp in tempList) {
+            const subtempList = groupBy(tempList[temp], "subgroup");
+            result.push(subtempList);
+          }
+          setResults(result);
+          setProducts(data);
         }
       }
     })
   }
+
+  function groupBy(array, key) {
+    return array
+      .reduce((hash, obj) => {
+        if (obj[key] === undefined) return hash;
+        return Object.assign(hash, { [obj[key]]: (hash[obj[key]] || []).concat(obj) })
+      }, {})
+  }
+
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
     getProducts(e.target.value, selectedMaingroup, selectedSubgroup);
   }
 
+  const handleDelete = (id) => {
+    ApiService.deleteProduct(id).then(res => {
+      notify = null;
+      if (res.status === 200) {
+        toast(res.data.msg, {
+          position: 'bottom-right',
+          id: notify, // Custom Icon
+          icon: '👏',
+        });
+        setTimeout(() => {
+          notify = toast.dismiss();
+          getProducts(search, selectedMaingroup, selectedSubgroup);
+        }, 3000);
+      } else {
+        notify = toast.dismiss();
+      }
+    }).catch(err => {
+      console.log(err);
+      notify = toast.dismiss();
+    })
+  }
+
   return (
     <div className="App">
       <div className='content'>
+        <Toaster />
         <Card className='main-card'>
-          <Header />
+          <Header title={"Product List"} />
           <main className='mt-4'>
             <Row gutter={[16, 16]}>
               <Col xs={24} sm={24} md={10} lg={8}>
@@ -174,9 +228,8 @@ function HomePage() {
                           <Button block
                             onClick={() => {
                               setShowSearchFlag(!showSearchFlag);
-                              setSearch("");
                             }}
-                            className='mt-4'>
+                            className='mt-4 press-btn'>
                             PRESS TO RETURN TO PRICE LIST
                           </Button>
                         </div>
@@ -185,8 +238,8 @@ function HomePage() {
                         <Button block
                           onClick={() => {
                             setShowSearchFlag(!showSearchFlag);
-                            getProducts("", "", "");
-                          }}>
+                          }}
+                          className='press-btn'>
                           PRESS TO SEARCH PRICE LIST
                         </Button>
                         <Row className='mt-4' type="flex" gutter={[16, 16]}>
@@ -242,7 +295,62 @@ function HomePage() {
               </Col>
               <Col xs={24} sm={24} md={14} lg={16}>
                 <Card>
-                  <Table columns={columns} dataSource={products} className='product-table' />
+                  <div className='add-btn-box'>
+                    <Button type="default" htmlType="button"
+                      onClick={() => { window.location.href = '/product/add'; }}>
+                      Add
+                    </Button>
+                  </div>
+                  {/* <Table columns={columns} className='product-table mt-4' /> */}
+                  <div className="custom-table mt-4">
+                    <table>
+                      <thead className='custom-table-header'>
+                        <tr>
+                          <th>Code</th>
+                          <th>Description</th>
+                          <th>Price £</th>
+                          <th>Disc</th>
+                          <th>Price £</th>
+                          <th>Weight</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {results.map((item, index) => {
+                          return <>
+                            <tr key={index}>
+                              <td></td>
+                              <td className='td-description' colSpan="6">
+                                <b>
+                                  {subgroupList.filter((main) => main.id === Object.keys(item)[0]) &&
+                                    subgroupList.filter((main) => main.id === parseInt(Object.keys(item)[0]))[0].name}
+                                </b>
+                              </td>
+                            </tr>
+                            {item[parseInt(Object.keys(item)[0])]?.map((subitem, subkey) => {
+                              return (
+                                <tr key={subkey}>
+                                  <td>{subitem.code}</td>
+                                  <td className='td-description'>{subitem.description}</td>
+                                  <td>£ {subitem.price}</td>
+                                  <td>{subitem.discount}%</td>
+                                  <td>£ {(subitem.price * (1 - subitem.discount)).toFixed(2)}</td>
+                                  <td>{subitem.weight}</td>
+                                  <td>
+                                    <a href={`/product/edit/${subitem.id}`}>Edit</a>
+                                    <Popconfirm title="Sure to delete?"
+                                      onConfirm={() => handleDelete(subitem.id)} className='ml-2'>
+                                      <a>Delete</a>
+                                    </Popconfirm>
+                                  </td>
+                                </tr>
+                              )
+                            })}
+                          </>
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 </Card>
               </Col>
             </Row>
