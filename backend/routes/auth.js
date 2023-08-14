@@ -45,10 +45,6 @@ router.post('/register', (req, res) => {
                 res.status(500).send({
                   msg: error,
                 });
-              } else if (err) {
-                res.status(500).send({
-                  msg: err,
-                });
               } else {
                 res.status(200).send({
                   msg: 'User successfully registered',

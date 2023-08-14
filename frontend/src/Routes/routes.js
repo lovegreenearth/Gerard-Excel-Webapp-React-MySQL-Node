@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import Login from '../Pages/Login';
+import Login from '../Pages/Auth/Login';
 import Dashboard from '../Pages/Dashboard';
-import Register from '../Pages/Register';
-import PageNotFound from '../Pages/PageNotFound';
+import Register from '../Pages/Auth/Register';
+import AddProduct from '../Pages/Product/AddProduct';
 
 const Rotas = () => {
   const [loggedUser, setLoggedUser] = useState("");
@@ -17,10 +17,18 @@ const Rotas = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {loggedUser && <Route path="/" exact element={<Dashboard />} />}
-        <Route path="*" element={<PageNotFound />} />
-        {!loggedUser && <Route path="/" element={<Login />} />}
-        {!loggedUser && <Route path="/register" element={<Register />} />}
+        {
+          loggedUser ?
+            <>
+              <Route path="/" exact element={<Dashboard />} />
+              <Route path="/product/add" element={<AddProduct />} />
+              <Route path="/product/edit/:id" element={<AddProduct />} />
+            </> :
+            <>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </>
+        }
       </Routes>
     </BrowserRouter>
   );
