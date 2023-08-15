@@ -292,10 +292,10 @@ const AddProduct = () => {
                       name={'discount'}
                       label="Discount"
                       rules={[{ required: true }]}>
-                      <InputNumber max={1} min={0} onChange={(e) => handleDiscountChange(e)}
+                      <InputNumber max={100} min={0} onChange={(e) => handleDiscountChange(e)}
                         name='discount'
                         value={values.discount}
-                        formatter={(value) => `% ${value}`} />
+                        formatter={(value) => `${value} %`} />
                     </Form.Item>
                     <Form.Item
                       name={'weight'}

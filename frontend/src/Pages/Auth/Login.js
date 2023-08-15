@@ -34,7 +34,7 @@ const Login = ({ logado = false }) => {
       }
 
       if (res.status === 200) {
-        localStorage.setItem("@user", JSON.stringify(res.data.user.email));
+        localStorage.setItem("@user", JSON.stringify(res.data.user));
         window.location.reload();
         toast(res.data.msg, {
           position: 'bottom-right',

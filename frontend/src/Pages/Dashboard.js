@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../Styles/dashboard.css';
 import Header from '../Components/header/header';
-import { Card, Row, Col, Input, Table, List, Button, Popconfirm } from 'antd';
+import { Card, Row, Col, Input, Table, List, Button, Popconfirm, InputNumber } from 'antd';
 import { ApiService } from '../Service/api';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -61,6 +61,10 @@ function HomePage() {
     },
   ];
 
+  const [loggedUser, setLoggedUser] = useState({
+    name: "",
+    discount: ""
+  });
   const [maingroups, setMaingroups] = useState([]);
   const [subgroupList, setSubgroupList] = useState([]);
   const [subgroups, setSubgroups] = useState([]);
@@ -93,7 +97,11 @@ function HomePage() {
   useEffect(() => {
     getSubgroups();
     getMaingroup();
-    getProducts(search, selectedMaingroup, selectedSubgroup);
+    const user = JSON.parse(localStorage.getItem("@user"));
+    setLoggedUser({
+      name: user.name,
+      discount: user.discount
+    });
   }, [])
 
   const getMaingroup = () => {
@@ -135,11 +143,11 @@ function HomePage() {
               weight: item.weight
             };
           });
+          var subList = groupBy(data, "subgroup");
           var result = [];
-          var tempList = groupBy(data, "group");
-          for (var temp in tempList) {
-            const subtempList = groupBy(tempList[temp], "subgroup");
-            result.push(subtempList);
+          for (var item in subList) {
+            var temp = { [item]: subList[item] };
+            result.push(temp);
           }
           setResults(result);
           setProducts(data);
@@ -153,7 +161,7 @@ function HomePage() {
       .reduce((hash, obj) => {
         if (obj[key] === undefined) return hash;
         return Object.assign(hash, { [obj[key]]: (hash[obj[key]] || []).concat(obj) })
-      }, {})
+      }, {});
   }
 
 
@@ -184,12 +192,38 @@ function HomePage() {
     })
   }
 
+  const logout = () => {
+    localStorage.clear();
+    window.location.reload();
+  }
+
   return (
     <div className="App">
       <div className='content'>
         <Toaster />
         <Card className='main-card'>
-          <Header title={"Product List"} />
+          <div>
+            <div className="header-info">
+              <h2>Product List</h2>
+              <input type="button" className="logout-btn" onClick={() => logout()} value={"Logout"} />
+            </div>
+            <div className='account-info'>
+              <div>
+                <label>Username: {loggedUser.name}, </label>
+              </div>
+              <div className='account-info ml-2'>
+                <label>Your Discount </label>
+                <InputNumber
+                  className='ml-2'
+                  value={loggedUser.discount}
+                  min={0}
+                  max={100}
+                  formatter={value => `${value}%`}
+                  parser={value => value.replace('%', '')}
+                />
+              </div>
+            </div>
+          </div>
           <main className='mt-4'>
             <Row gutter={[16, 16]}>
               <Col xs={24} sm={24} md={10} lg={8}>
@@ -317,8 +351,8 @@ function HomePage() {
                       </thead>
                       <tbody>
                         {results.map((item, index) => {
-                          return <>
-                            <tr key={index}>
+                          return <React.Fragment key={index}>
+                            <tr>
                               <td></td>
                               <td className='td-description' colSpan="6">
                                 <b>
@@ -329,12 +363,22 @@ function HomePage() {
                             </tr>
                             {item[parseInt(Object.keys(item)[0])]?.map((subitem, subkey) => {
                               return (
-                                <tr key={subkey}>
+                                <tr key={subkey + 1}>
                                   <td>{subitem.code}</td>
                                   <td className='td-description'>{subitem.description}</td>
                                   <td>£ {subitem.price}</td>
-                                  <td>{subitem.discount}%</td>
-                                  <td>£ {(subitem.price * (1 - subitem.discount)).toFixed(2)}</td>
+                                  <td>
+                                    {loggedUser.discount > subitem.discount ?
+                                      subitem.discount : loggedUser.discount
+                                    }%
+                                  </td>
+                                  <td>
+                                    £ {
+                                      loggedUser.discount > subitem.discount ?
+                                        (subitem.price * (1 - (subitem.discount / 100))).toFixed(2) :
+                                        (subitem.price * (1 - (loggedUser.discount / 100))).toFixed(2)
+                                    }
+                                  </td>
                                   <td>{subitem.weight}</td>
                                   <td>
                                     <a href={`/product/edit/${subitem.id}`}>Edit</a>
@@ -346,7 +390,7 @@ function HomePage() {
                                 </tr>
                               )
                             })}
-                          </>
+                          </React.Fragment>
                         })}
                       </tbody>
                     </table>

@@ -13,7 +13,6 @@ function Header({ title }) {
       <header>
         <div className="header-info">
           <h2>{title}</h2>
-          {/* <Button onClick={logout} type="primary">Logout</Button> */}
           <input type="button" className="logout-btn" onClick={() => logout()} value={"Logout"} />
         </div>
       </header>

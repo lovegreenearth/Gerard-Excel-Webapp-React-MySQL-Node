@@ -25,6 +25,7 @@ const Rotas = () => {
               <Route path="/product/edit/:id" element={<AddProduct />} />
             </> :
             <>
+              <Route path="/" exact element={<Login />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
             </>

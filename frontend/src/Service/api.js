@@ -1,6 +1,5 @@
 import axios from "axios";
 
-// export const SERVER_URL = "http://164.92.124.174";
 export const SERVER_URL = "http://localhost:3001";
 
 const login = (data) => axios.post(`${SERVER_URL}/auth/login`, data);
