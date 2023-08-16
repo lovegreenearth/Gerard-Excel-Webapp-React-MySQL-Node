@@ -95,7 +95,9 @@ router.post('/login', (req, res) => {
               name: result[0].name,
               email: email,
               company: result[0].company,
+              discount: result[0].discount,
               loggedIn: true,
+              role: result[0].role,
             };
             // getSessionIDCookie(req, res);
             // creatSessionOnDB(req);

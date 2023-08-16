@@ -35,18 +35,22 @@ const AddProduct = () => {
     subgroup: "",
     price: "",
     weight: "",
-    discount: ""
+    maxDiscount: ""
   });
   const [maingroups, setMaingroups] = useState([]);
   const [subgroups, setSubgroups] = useState([]);
   const [subgroupList, setSubgroupList] = useState([]);
+  const [onlyView, setOnlyView] = useState(false);
 
   useEffect(() => {
+    getMaingroup();
+    getSubgroups();
     if (id) {
       getProductById(id);
     }
-    getMaingroup();
-    getSubgroups();
+    if (window.location.pathname.includes('/product/view')) {
+      setOnlyView(true);
+    }
   }, []);
 
   const getProductById = (id) => {
@@ -247,77 +251,114 @@ const AddProduct = () => {
                     <Form.Item
                       name={'code'}
                       label="Code"
-                      rules={[{ required: true }]}
+                      rules={[{ required: !onlyView }]}
                     >
-                      <Input name="code" onChange={(e) => handleChange(e)} />
+                      {onlyView ?
+                        <label>{values.code}</label> :
+                        <Input name="code" onChange={(e) => handleChange(e)} disabled={onlyView} />
+                      }
                     </Form.Item>
                     <Form.Item
                       name={'group'}
                       label="Group"
-                      rules={[{ required: true }]}>
-                      <Select
-                        showSearch
-                        placeholder="Select a group"
-                        optionFilterProp="children"
-                        onChange={onGroupChange}
-                        filterOption={(input, option) =>
-                          (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                        }
-                        options={maingroups}
-                      />
+                      rules={[{ required: !onlyView }]}>
+                      {onlyView ?
+                        <label>
+                          {maingroups.filter((main) => main.value === parseInt(values.group))[0]?.label}
+                        </label> :
+                        <Select
+                          showSearch
+                          placeholder="Select a group"
+                          optionFilterProp="children"
+                          onChange={onGroupChange}
+                          filterOption={(input, option) =>
+                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                          }
+                          options={maingroups}
+                          disabled={onlyView}
+                        />
+                      }
                     </Form.Item>
                     <Form.Item
                       name={'subgroup'}
                       label="Subgroup"
-                      rules={[{ required: true }]}>
-                      <Select
-                        showSearch
-                        placeholder="Select a subgroup"
-                        optionFilterProp="children"
-                        onChange={onSubgroupChange}
-                        filterOption={(input, option) =>
-                          (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                        }
-                        options={subgroups}
-                      />
+                      rules={[{ required: !onlyView }]}>
+                      {onlyView ?
+                        <label>
+                          {subgroupList.filter((sub) => sub.id === parseInt(values.subGroup))[0]?.name}
+                        </label> :
+                        <Select
+                          showSearch
+                          placeholder="Select a subgroup"
+                          optionFilterProp="children"
+                          onChange={onSubgroupChange}
+                          filterOption={(input, option) =>
+                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                          }
+                          options={subgroups}
+                          disabled={onlyView}
+                        />
+                      }
                     </Form.Item>
                     <Form.Item
                       name={'price'}
                       label="Price"
-                      rules={[{ required: true }]}
+                      rules={[{ required: !onlyView }]}
                     >
-                      <Input prefix="£" name="price" onChange={(e) => handleChange(e)} />
+                      {onlyView ?
+                        <label>£ {values.price}</label> :
+                        <Input prefix="£" name="price" onChange={(e) => handleChange(e)} disabled={onlyView} />
+                      }
                     </Form.Item>
                     <Form.Item
                       name={'discount'}
                       label="Discount"
-                      rules={[{ required: true }]}>
-                      <InputNumber max={100} min={0} onChange={(e) => handleDiscountChange(e)}
-                        name='discount'
-                        value={values.discount}
-                        formatter={(value) => `${value} %`} />
+                      rules={[{ required: !onlyView }]}>
+                      {onlyView ?
+                        <label>{values.maxDiscount} %</label> :
+                        <InputNumber max={100} min={0} onChange={(e) => handleDiscountChange(e)}
+                          name='discount'
+                          value={values.maxDiscount}
+                          disabled={onlyView}
+                          formatter={(value) => `${value} %`} />
+                      }
                     </Form.Item>
                     <Form.Item
                       name={'weight'}
                       label="Weight"
-                      rules={[{ required: true }]}>
-                      <Input name="weight" onChange={(e) => handleChange(e)} />
+                      rules={[{ required: !onlyView }]}>
+                      {onlyView ?
+                        <label>{values.weight}</label> :
+                        <Input name="weight" onChange={(e) => handleChange(e)} disabled={onlyView} />
+                      }
                     </Form.Item>
                     <Form.Item
                       name={'description'}
                       label="Description">
-                      <Input.TextArea name="description" onChange={(e) => handleChange(e)} />
+                      {onlyView ?
+                        <label>{values.description}</label> :
+                        <Input.TextArea name="description" onChange={(e) => handleChange(e)} disabled={onlyView} />
+                      }
                     </Form.Item>
-                    <Form.Item className='action-box'>
-                      <Button type="primary" htmlType="submit">
-                        Submit
-                      </Button>
-                      <Button type="default" htmlType="button"
-                        className='ml-2'
-                        onClick={() => { window.location.href = '/'; }}>
-                        Cancel
-                      </Button>
-                    </Form.Item>
+                    {
+                      onlyView ?
+                        <Form.Item className='action-box'>
+                          <Button type='default' htmlType='button'
+                            onClick={() => { window.location.href = '/'; }}>
+                            Go to List
+                          </Button>
+                        </Form.Item> :
+                        <Form.Item className='action-box'>
+                          <Button type="primary" htmlType="submit">
+                            Submit
+                          </Button>
+                          <Button type="default" htmlType="button"
+                            className='ml-2'
+                            onClick={() => { window.location.href = '/'; }}>
+                            Cancel
+                          </Button>
+                        </Form.Item>
+                    }
                   </Form>
                 </Col>
               </Row>

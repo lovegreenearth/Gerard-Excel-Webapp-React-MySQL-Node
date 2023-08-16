@@ -63,7 +63,8 @@ function HomePage() {
 
   const [loggedUser, setLoggedUser] = useState({
     name: "",
-    discount: ""
+    discount: "",
+    role: 0,
   });
   const [maingroups, setMaingroups] = useState([]);
   const [subgroupList, setSubgroupList] = useState([]);
@@ -100,7 +101,8 @@ function HomePage() {
     const user = JSON.parse(localStorage.getItem("@user"));
     setLoggedUser({
       name: user.name,
-      discount: user.discount
+      discount: user.discount,
+      role: user.role,
     });
   }, [])
 
@@ -366,26 +368,43 @@ function HomePage() {
                                 <tr key={subkey + 1}>
                                   <td>{subitem.code}</td>
                                   <td className='td-description'>{subitem.description}</td>
-                                  <td>£ {subitem.price}</td>
                                   <td>
-                                    {loggedUser.discount > subitem.discount ?
-                                      subitem.discount : loggedUser.discount
-                                    }%
+                                    {parseInt(subitem.price) === 0 ?
+                                      <>POA</> :
+                                      <>£ {subitem.price}</>
+                                    }
                                   </td>
                                   <td>
-                                    £ {
-                                      loggedUser.discount > subitem.discount ?
-                                        (subitem.price * (1 - (subitem.discount / 100))).toFixed(2) :
-                                        (subitem.price * (1 - (loggedUser.discount / 100))).toFixed(2)
+                                    {parseInt(subitem.price) === 0 ? '' :
+                                      <>
+                                        {loggedUser.discount > subitem.discount ?
+                                          subitem.discount : loggedUser.discount} %
+                                      </>
+                                    }
+                                  </td>
+                                  <td>
+                                    {parseInt(subitem.price) === 0 ? '' :
+                                      <>
+                                        £ {
+                                          loggedUser.discount > subitem.discount ?
+                                            (subitem.price * (1 - (subitem.discount / 100))).toFixed(2) :
+                                            (subitem.price * (1 - (loggedUser.discount / 100))).toFixed(2)
+                                        }
+                                      </>
                                     }
                                   </td>
                                   <td>{subitem.weight}</td>
                                   <td>
-                                    <a href={`/product/edit/${subitem.id}`}>Edit</a>
-                                    <Popconfirm title="Sure to delete?"
-                                      onConfirm={() => handleDelete(subitem.id)} className='ml-2'>
-                                      <a>Delete</a>
-                                    </Popconfirm>
+                                    {loggedUser.role === 1 ?
+                                      <>
+                                        <a href={`/product/edit/${subitem.id}`}>Edit</a>
+                                        <Popconfirm title="Sure to delete?"
+                                          onConfirm={() => handleDelete(subitem.id)} className='ml-2'>
+                                          <a>Delete</a>
+                                        </Popconfirm>
+                                      </> :
+                                      <a href={`/product/view/${subitem.id}`}>View</a>
+                                    }
                                   </td>
                                 </tr>
                               )
