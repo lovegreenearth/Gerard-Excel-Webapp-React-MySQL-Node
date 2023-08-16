@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '../Styles/dashboard.css';
-import Header from '../Components/header/header';
-import { Card, Row, Col, Input, Table, List, Button, Popconfirm, InputNumber } from 'antd';
+import { Card, Row, Col, Input, List, Button, Popconfirm, InputNumber } from 'antd';
 import { ApiService } from '../Service/api';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -9,58 +8,6 @@ const { TextArea } = Input;
 let notify = null;
 
 function HomePage() {
-  const columns = [
-    {
-      title: 'Code',
-      dataIndex: 'code',
-      key: 'code',
-    },
-    {
-      title: 'Description',
-      dataIndex: 'description',
-      key: 'description',
-    },
-    {
-      title: 'Price £',
-      dataIndex: 'price',
-      key: 'price',
-      render: text => <>£ {text}</>
-    },
-    {
-      title: 'Disc',
-      dataIndex: 'discount',
-      key: 'discount',
-      render: text => <p>{text * 100} %</p>
-    },
-    {
-      title: 'Price £',
-      dataIndex: 'finalPrice',
-      key: 'finalPrice',
-      render: (_, item) => (
-        <>£ {(item.price * (1 - item.discount)).toFixed(2)}</>
-      )
-    },
-    {
-      title: 'Weight',
-      dataIndex: 'weight',
-      key: 'weight',
-      render: text => <p>{text}</p>
-    },
-    {
-      title: 'Action',
-      dataIndex: 'id',
-      key: 'id',
-      render: (_, item) => (
-        <>
-          <a href={`/product/edit/${item.id}`}>Edit</a>
-          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(item.id)} className='ml-2'>
-            <a>Delete</a>
-          </Popconfirm>
-        </>
-      )
-    },
-  ];
-
   const [loggedUser, setLoggedUser] = useState({
     name: "",
     discount: "",
@@ -166,6 +113,12 @@ function HomePage() {
       }, {});
   }
 
+  const resetFilter = () => {
+    setSelectedMaingroup("");
+    setSelectedSubgroup("");
+    setSearch("");
+    setResults([]);
+  }
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
@@ -231,8 +184,15 @@ function HomePage() {
               <Col xs={24} sm={24} md={10} lg={8}>
                 <div>
                   <Card>
+                    <div>
+                      <Button block
+                        onClick={resetFilter}
+                        className='press-btn'>
+                        Reset Filter
+                      </Button>
+                    </div>
                     {showSearchFlag ?
-                      <div>
+                      <div className='mt-4'>
                         <div>
                           <label>Search For Code or Description: </label>
                           <Input placeholder="Search..." value={search} onChange={(e) => handleSearch(e)} />
@@ -270,7 +230,7 @@ function HomePage() {
                           </Button>
                         </div>
                       </div> :
-                      <div>
+                      <div className='mt-4'>
                         <Button block
                           onClick={() => {
                             setShowSearchFlag(!showSearchFlag);
@@ -348,7 +308,7 @@ function HomePage() {
                           <th>Disc</th>
                           <th>Price £</th>
                           <th>Weight</th>
-                          <th>Action</th>
+                          {loggedUser.role === 1 && <th>Action</th>}
                         </tr>
                       </thead>
                       <tbody>
@@ -394,18 +354,17 @@ function HomePage() {
                                     }
                                   </td>
                                   <td>{subitem.weight}</td>
-                                  <td>
-                                    {loggedUser.role === 1 ?
-                                      <>
-                                        <a href={`/product/edit/${subitem.id}`}>Edit</a>
-                                        <Popconfirm title="Sure to delete?"
-                                          onConfirm={() => handleDelete(subitem.id)} className='ml-2'>
-                                          <a>Delete</a>
-                                        </Popconfirm>
-                                      </> :
-                                      <a href={`/product/view/${subitem.id}`}>View</a>
-                                    }
-                                  </td>
+                                  {loggedUser.role === 1 ?
+                                    <td>
+                                      <a href={`/product/edit/${subitem.id}`}>Edit</a>
+                                      <Popconfirm title="Sure to delete?"
+                                        onConfirm={() => handleDelete(subitem.id)} className='ml-2'>
+                                        <a>Delete</a>
+                                      </Popconfirm>
+                                    </td>
+                                    :
+                                    null
+                                  }
                                 </tr>
                               )
                             })}
