@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { ApiService } from '../../Service/api';
 import toast, { Toaster } from 'react-hot-toast';
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 const layout = {
   labelCol: {
@@ -26,6 +26,7 @@ const validateMessages = {
 let notify = null;
 
 const AddProduct = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const [form] = Form.useForm();
   const [values, setValues] = useState({
@@ -171,7 +172,7 @@ const AddProduct = () => {
         });
         setTimeout(() => {
           notify = toast.dismiss();
-          window.location.href = "/";
+          navigate("/");
           form.resetFields();
         }, 3000);
       } else {
@@ -313,9 +314,8 @@ const AddProduct = () => {
                         Submit
                       </Button>
                       <Button type="default" htmlType="button"
-                        className='ml-2'
-                        onClick={() => { window.location.href = '/'; }}>
-                        Cancel
+                        className='ml-2'>
+                        <Link to="/">Cancel</Link>
                       </Button>
                     </Form.Item>
                   </Form>

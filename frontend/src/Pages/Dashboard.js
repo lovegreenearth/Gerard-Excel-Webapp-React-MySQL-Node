@@ -3,11 +3,13 @@ import '../Styles/dashboard.css';
 import { Card, Row, Col, Input, List, Button, Popconfirm, InputNumber } from 'antd';
 import { ApiService } from '../Service/api';
 import toast, { Toaster } from 'react-hot-toast';
+import { Link, useNavigate } from 'react-router-dom';
 
 const { TextArea } = Input;
 let notify = null;
 
 function HomePage() {
+  const navigate = useNavigate();
   const [loggedUser, setLoggedUser] = useState({
     name: "",
     discount: "",
@@ -291,12 +293,14 @@ function HomePage() {
               </Col>
               <Col xs={24} sm={24} md={14} lg={16}>
                 <Card>
-                  <div className='add-btn-box'>
-                    <Button type="default" htmlType="button"
-                      onClick={() => { window.location.href = '/product/add'; }}>
-                      Add
-                    </Button>
-                  </div>
+                  {loggedUser.role === 1 &&
+                    <div className='add-btn-box'>
+                      <Button type="default" htmlType="button"
+                        onClick={() => { navigate("/product/add"); }}>
+                        Add
+                      </Button>
+                    </div>
+                  }
                   {/* <Table columns={columns} className='product-table mt-4' /> */}
                   <div className="custom-table mt-4">
                     <table>
@@ -356,7 +360,10 @@ function HomePage() {
                                   <td>{subitem.weight}</td>
                                   {loggedUser.role === 1 ?
                                     <td>
-                                      <a href={`/product/edit/${subitem.id}`}>Edit</a>
+                                      <Link to={`/product/edit/${subitem.id}`}>
+                                        Edit
+                                      </Link>
+                                      {/* <a href={`/product/edit/${subitem.id}`}>Edit</a> */}
                                       <Popconfirm title="Sure to delete?"
                                         onConfirm={() => handleDelete(subitem.id)} className='ml-2'>
                                         <a>Delete</a>

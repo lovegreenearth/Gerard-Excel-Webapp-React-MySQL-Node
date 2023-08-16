@@ -1,7 +1,7 @@
 import '../../Styles/login.css';
 import * as yup from 'yup';
 import { ErrorMessage, Formik, Form, Field } from 'formik';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { ApiService } from '../../Service/api';
@@ -9,7 +9,7 @@ import { ApiService } from '../../Service/api';
 let notify = null;
 
 const Login = ({ logado = false }) => {
-
+  const navigate = useNavigate();
   const [isActive, setIsActive] = useState(false);
   const [values, setValues] = useState({
     email: "",

@@ -1,7 +1,7 @@
 import '../../Styles/login.css';
 import * as yup from 'yup';
 import { ErrorMessage, Formik, Form, Field } from 'formik';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { ApiService } from '../../Service/api';
@@ -9,6 +9,7 @@ import { ApiService } from '../../Service/api';
 let notify = null;
 
 const Register = ({ logado = false }) => {
+  const navigate = useNavigate();
   const [isActive, setIsActive] = useState(false);
   const [values, setValues] = useState({
     name: "",
@@ -30,7 +31,8 @@ const Register = ({ logado = false }) => {
     ApiService.register(data).then((res) => {
       notify = null;
       if (res.data.code === 106) {
-        window.location.href = '/';
+        navigate("/");
+        notify = toast.dismiss();
       }
       if (res.status === 200) {
         toast(res.data.msg, {
@@ -39,7 +41,8 @@ const Register = ({ logado = false }) => {
           icon: '👏',
         });
         setTimeout(() => {
-          window.location.href = "/"
+          navigate("/");
+          notify = toast.dismiss();
         }, 3000)
       }
     }).catch(err => {

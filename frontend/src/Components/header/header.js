@@ -1,6 +1,5 @@
 import React from "react";
 import "../../Styles/header.css"
-import { Button } from 'antd';
 
 function Header({ title }) {
   const logout = () => {

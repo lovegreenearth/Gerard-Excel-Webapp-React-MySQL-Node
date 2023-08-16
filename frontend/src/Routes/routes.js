@@ -21,9 +21,8 @@ const Rotas = () => {
           loggedUser ?
             <>
               <Route path="/" exact element={<Dashboard />} />
-              <Route path="/product/add" element={<AddProduct />} />
               <Route path="/product/edit/:id" element={<AddProduct />} />
-              <Route path="/product/view/:id" element={<AddProduct />} />
+              <Route path="/product/add" element={<AddProduct />} />              
             </> :
             <>
               <Route path="/" exact element={<Login />} />
