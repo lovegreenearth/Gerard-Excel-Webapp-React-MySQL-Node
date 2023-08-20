@@ -161,7 +161,7 @@ function HomePage() {
         <Card className='main-card'>
           <div>
             <div className="header-info">
-              <h2>Product List</h2>
+              <h2>Hall Stage Price List</h2>
               <input type="button" className="logout-btn" onClick={() => logout()} value={"Logout"} />
             </div>
             <div className='account-info'>
